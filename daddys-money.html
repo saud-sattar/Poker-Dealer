@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daddy's Money — Poker Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --felt: #0f3d2e;
+      --felt-dark: #092a20;
+      --felt-light: #155038;
+      --wood: #5c3a24;
+      --wood-dark: #3c2416;
+      --wood-light: #7a4f30;
+      --gold: #d4af37;
+      --gold-soft: #e8caa0;
+      --cream: #f1ead6;
+      --muted: #a9c2b4;
+      --red: #a83a3a;
+      --red-dark: #7c2828;
+      --shadow: rgba(0, 0, 0, .35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse at 50% -10%, #1a5c40 0%, var(--felt) 45%, var(--felt-dark) 100%);
+      color: var(--cream);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    ::selection {
+      background: var(--gold);
+      color: var(--felt-dark);
+    }
+
+    header {
+      padding: 28px 20px 18px;
+      text-align: center;
+      border-bottom: 1px solid rgba(212, 175, 55, .25);
+      background: linear-gradient(180deg, rgba(0, 0, 0, .15), transparent);
+    }
+
+    header h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-style: italic;
+      font-size: clamp(30px, 6vw, 46px);
+      margin: 0 0 4px;
+      letter-spacing: .5px;
+      color: var(--gold-soft);
+      text-shadow: 0 2px 10px rgba(0, 0, 0, .4);
+    }
+
+    header p.tagline {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: .3px;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    .control-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      margin: 22px auto 0;
+      background: rgba(4, 18, 12, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 999px;
+      padding: 8px 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, .3);
+      border: 1px solid rgba(212, 175, 55, .25);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .pill label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .pill input[type=number] {
+      width: 52px;
+      background: transparent;
+      border: none;
+      color: var(--cream);
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: right;
+    }
+
+    .pill input[type=number]:focus {
+      outline: none;
+      color: var(--gold-soft);
+    }
+
+    button {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13px;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    button:active {
+      transform: scale(.96);
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #f7e2a9, var(--gold));
+      color: var(--felt-dark);
+      box-shadow: 0 3px 12px rgba(212, 175, 55, 0.28);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 4px 16px rgba(212, 175, 55, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      background: #4a4a3e;
+      color: #827b68;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, .06);
+      color: var(--cream);
+      border: 1px solid rgba(241, 234, 214, .2);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .12);
+      border-color: rgba(241, 234, 214, .35);
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: rgba(168, 58, 58, .15);
+      color: #ff9999;
+      border: 1px solid rgba(168, 58, 58, .4);
+    }
+
+    .btn-danger:hover {
+      background: rgba(168, 58, 58, .28);
+      border-color: rgba(168, 58, 58, .65);
+    }
+
+    /* table */
+    .table-rail {
+      margin-top: 26px;
+      border-radius: 32px;
+      padding: 22px;
+      background: linear-gradient(180deg, #6c4228, #482a17 40%, #2a160b);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .12), inset 0 0 0 1px rgba(0, 0, 0, .5);
+      border: 1px solid rgba(212, 175, 55, .25);
+    }
+
+    .felt {
+      border-radius: 24px;
+      background:
+        radial-gradient(ellipse at 50% 25%, #185a3c, var(--felt) 55%, var(--felt-dark) 100%);
+      box-shadow: inset 0 0 50px rgba(0, 0, 0, .55), inset 0 0 0 1.5px rgba(212, 175, 55, .2);
+      padding: 24px;
+    }
+
+    .pot-line {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .pot-line .label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .pot-line .amount {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 700;
+      font-size: clamp(34px, 7vw, 52px);
+      color: #c084fc;
+      text-shadow: 0 0 28px rgba(192, 132, 252, 0.45), 0 2px 8px rgba(0, 0, 0, .6);
+      letter-spacing: -0.5px;
+    }
+
+    .hand-status {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .hand-title {
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+    }
+
+    .stages-track {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .stage-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.35;
+      transition: all 0.25s ease;
+    }
+
+    .stage-item.active {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+
+    .stage-item.past {
+      opacity: 0.75;
+    }
+
+    .stage-pill {
+      width: 38px;
+      height: 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      transition: all 0.25s ease;
+    }
+
+    .stage-item.active .stage-pill {
+      background: #c084fc;
+      box-shadow: 0 0 14px rgba(192, 132, 252, 0.9), 0 0 4px #c084fc;
+    }
+
+    .stage-item.past .stage-pill {
+      background: rgba(192, 132, 252, 0.5);
+      box-shadow: 0 0 6px rgba(192, 132, 252, 0.25);
+    }
+
+    .stage-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+      transition: color 0.25s ease;
+    }
+
+    .stage-item.active .stage-label {
+      color: #c084fc;
+      font-weight: 700;
+      text-shadow: 0 0 8px rgba(192, 132, 252, 0.45);
+    }
+
+    .stage-item.past .stage-label {
+      color: rgba(233, 213, 255, 0.7);
+    }
+
+
+
+    /* Glassmorphic seats & table */
+    .seats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 16px;
+    }
+
+    .seat {
+      background: rgba(8, 28, 20, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 175, 55, 0.18);
+      border-radius: 18px;
+      padding: 14px 16px;
+      position: relative;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .seat:hover {
+      border-color: rgba(212, 175, 55, 0.35);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .seat.winner-selected {
+      border-color: var(--gold);
+      background: rgba(24, 56, 40, 0.8);
+      box-shadow: 0 0 0 2px var(--gold), 0 0 24px rgba(212, 175, 55, 0.45);
+    }
+
+    .seat.active-turn {
+      border-color: rgba(232, 202, 160, 0.9);
+      background: rgba(13, 44, 32, 0.9);
+      animation: activeTurnGlow 2.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes activeTurnGlow {
+      0% {
+        box-shadow: 0 0 0 1.5px rgba(212, 175, 55, 0.6), 0 0 16px rgba(212, 175, 55, 0.25);
+      }
+
+      100% {
+        box-shadow: 0 0 0 2px rgba(247, 226, 169, 0.95), 0 0 30px rgba(212, 175, 55, 0.5);
+      }
+    }
+
+    .seat.folded {
+      opacity: 0.32;
+      filter: grayscale(0.8) brightness(0.75);
+      transform: scale(0.98);
+    }
+
+    .seat-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .seat-name {
+      font-weight: 600;
+      font-size: 15px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid transparent;
+      color: var(--cream);
+      width: 100%;
+      padding: 2px 0;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s;
+    }
+
+    .seat-name:focus {
+      outline: none;
+      border-bottom-color: var(--gold);
+    }
+
+    .badges {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .badge {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      font-family: 'IBM Plex Mono', monospace;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .badge.dealer {
+      background: linear-gradient(135deg, #ffd700, #d4af37);
+      color: var(--felt-dark);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .badge.sb {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: #fff;
+    }
+
+    .badge.bb {
+      background: linear-gradient(135deg, #8e1b1b, #5a1111);
+      color: #fff;
+    }
+
+    /* Stack & Bet row */
+    .stack-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 0 2px;
+    }
+
+    .stack-label {
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .stack-val {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gold-soft);
+      letter-spacing: -0.3px;
+    }
+
+    .stack-chip {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    /* Centered Round Bet in middle of card */
+    .seat-bet-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 3px 0 5px;
+    }
+
+    .bet-chip-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      width: 100%;
+      max-width: 190px;
+      text-align: center;
+    }
+
+    .bet-chip-pill.active {
+      background: rgba(56, 189, 248, 0.16);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: #38bdf8;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .bet-chip-pill.idle {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(235, 245, 240, 0.45);
+    }
+
+    .bet-chip-pill .chip-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .bet-chip-pill.active .chip-dot {
+      background: #38bdf8;
+      box-shadow: 0 0 8px #38bdf8;
+    }
+
+    .bet-chip-pill.idle .chip-dot {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .bet-chip-pill .bet-label {
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 600;
+      opacity: 0.85;
+    }
+
+    .bet-chip-pill .bet-val {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Turn Actions */
+    .turn-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 2px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 8px;
+    }
+
+    .turn-main-actions,
+    .turn-sub-actions {
+      display: flex;
+      gap: 5px;
+      width: 100%;
+    }
+
+    .turn-actions button {
+      padding: 7px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 8px;
+      white-space: nowrap;
+      flex: 1;
+      transition: all 0.15s ease;
+    }
+
+    .turn-actions button:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-fold {
+      background: rgba(220, 53, 69, 0.14);
+      border: 1px solid rgba(220, 53, 69, 0.4);
+      color: #ff9999;
+    }
+
+    .btn-fold:hover {
+      background: rgba(220, 53, 69, 0.26);
+      border-color: rgba(220, 53, 69, 0.7);
+    }
+
+    .btn-check {
+      background: rgba(46, 204, 113, 0.14);
+      border: 1px solid rgba(46, 204, 113, 0.4);
+      color: #7bed9f;
+    }
+
+    .btn-check:hover {
+      background: rgba(46, 204, 113, 0.26);
+      border-color: rgba(46, 204, 113, 0.7);
+    }
+
+    .btn-call {
+      background: rgba(212, 175, 55, 0.16);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      color: var(--gold-soft);
+    }
+
+    .btn-call:hover {
+      background: rgba(212, 175, 55, 0.28);
+      border-color: var(--gold);
+    }
+
+    .btn-allin {
+      background: linear-gradient(135deg, #c0392b, #8e1b1b);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 2px 6px rgba(192, 57, 43, 0.35);
+      font-weight: 700;
+    }
+
+    .btn-allin:hover {
+      background: linear-gradient(135deg, #d34435, #a32222);
+      box-shadow: 0 3px 10px rgba(192, 57, 43, 0.55);
+    }
+
+    .hotkey {
+      display: inline-block;
+      font-size: 9px;
+      font-family: 'IBM Plex Mono', monospace;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 4px;
+      padding: 0 4px;
+      margin-left: 4px;
+      opacity: 0.85;
+      line-height: 14px;
+      vertical-align: middle;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* Seat Actions (Winner, Rebuy, Remove) */
+    .seat-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .icon-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(241, 234, 214, 0.14);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 6px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--cream);
+    }
+
+    .icon-btn.win-toggle {
+      border-color: rgba(212, 175, 55, 0.35);
+      color: var(--gold-soft);
+      background: rgba(212, 175, 55, 0.08);
+    }
+
+    .icon-btn.win-toggle:hover {
+      background: rgba(212, 175, 55, 0.2);
+      border-color: var(--gold);
+      color: #fff;
+    }
+
+    .icon-btn.win-toggle.active {
+      background: linear-gradient(180deg, var(--gold-soft), var(--gold));
+      color: var(--felt-dark);
+      border-color: var(--gold);
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+    }
+
+    .icon-btn.remove {
+      color: #e6a6a6;
+      border-color: rgba(230, 166, 166, 0.2);
+    }
+
+    .icon-btn.remove:hover {
+      background: rgba(168, 58, 58, 0.2);
+      border-color: rgba(168, 58, 58, 0.5);
+    }
+
+    .empty-note {
+      text-align: center;
+      color: var(--muted);
+      padding: 30px 10px;
+      font-size: 15px;
+    }
+
+    .award-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    /* history */
+    .history {
+      max-width: 980px;
+      margin: 34px auto 0;
+      padding: 0 16px;
+    }
+
+    .history h2 {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 22px;
+      color: var(--gold-soft);
+      margin: 0 0 12px;
+      text-align: center;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(0, 0, 0, .2);
+      border-radius: 14px;
+      overflow: hidden;
+      font-size: 14px;
+    }
+
+    .history-table th,
+    .history-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(212, 175, 55, .12);
+    }
+
+    .history-table th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .history-table td.num {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .history-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 40px;
+      padding: 0 16px;
+    }
+
+    @media (max-width:480px) {
+      .seats {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width:360px) {
+      .seats {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 12, 9, .72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal-overlay.hidden {
+      display: none;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 360px;
+      background: linear-gradient(180deg, var(--felt-light), var(--felt-dark));
+      border: 1px solid rgba(212, 175, 55, .35);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .5);
+    }
+
+    .modal-card h3 {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 20px;
+      color: var(--gold-soft);
+      margin: 0 0 6px;
+    }
+
+    .modal-card p.msg {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0 0 16px;
+      line-height: 1.4;
+    }
+
+    .modal-field {
+      margin-bottom: 14px;
+    }
+
+    .modal-field label {
+      display: block;
+      font-size: 12px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .modal-field input {
+      width: 100%;
+      background: rgba(0, 0, 0, .3);
+      border: 1px solid rgba(212, 175, 55, .3);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--cream);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+    }
+
+    .modal-field input:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .modal-actions button {
+      flex: 1;
+    }
+
+    /* Hide number input arrows */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Daddy's Money</h1>
+  </header>
+
+  <div class="wrap">
+    <div class="control-bar">
+      <div class="pill">
+        <label>Small Blind</label>
+        <input type="number" id="sbInput" min="0" step="1">
+      </div>
+      <div class="pill">
+        <label>Big Blind</label>
+        <input type="number" id="bbInput" min="0" step="1">
+      </div>
+
+      <button class="btn-ghost" id="addPlayerBtn">+ Add player</button>
+      <button class="btn-primary" id="newHandBtn">Deal new hand</button>
+      <button class="btn-primary" id="nextRoundBtn" style="display:none;">Next Round</button>
+      <button class="btn-danger" id="resetHandBtn" style="display:none;"
+        title="Abort current round and refund all bets">Reset round</button>
+      <button class="btn-ghost" id="saveGameBtn" title="Shortcut: S (when round is over)">Save Game <span
+          class="hotkey">S</span></button>
+      <button class="btn-ghost" id="loadGameBtn">Load Game</button>
+      <input type="file" id="loadGameInput" accept=".json" style="display:none;">
+      <button class="btn-danger" id="resetBtn">Reset game</button>
+
+    </div>
+
+    <div class="table-rail">
+      <div class="felt">
+        <div class="pot-line">
+          <div class="label">Pot</div>
+          <div class="amount" id="potAmount">0</div>
+          <div class="hand-no" id="handNo">No hand dealt yet</div>
+        </div>
+
+        <div class="seats" id="seats"></div>
+
+        <div class="award-row">
+          <button class="btn-primary" id="awardBtn" disabled>Award pot to selected winner(s)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="history">
+    <h2>Hand history</h2>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Dealer</th>
+          <th>SB</th>
+          <th>BB</th>
+          <th>Pot</th>
+          <th>Winner(s)</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody">
+        <tr>
+          <td colspan="6" style="text-align:center;color:var(--muted);padding:16px;">No hands played yet</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>Everything here saves automatically to this browser — reopen the file any time to pick up where you left off.
+  </footer>
+
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal-card" id="modalCard"></div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'chipLedgerState_v2';
+
+      let state = loadState() || {
+        players: [],       // {id, name, stack}
+        blinds: { small: 25, big: 50 },
+        buttonIndex: 0,
+        handNumber: 0,
+        handInProgress: false,
+
+        // new state fields
+        pot: 0,
+        currentBets: {},   // id -> amount in CURRENT round
+        activePlayers: [], // ids of players not folded
+        hasActed: {},      // id -> boolean
+        turnIndex: 0,      // index in activePlayers
+        highestBet: 0,     // highest bet in CURRENT round
+        roundName: 'Pre-flop',
+        roundOver: false,
+
+        selectedWinners: [],
+        history: []
+      };
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) { return null; }
+      }
+      function saveState() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+        catch (e) { }
+      }
+      function uid() { return Math.random().toString(36).slice(2, 9); }
+
+      const modalOverlay = document.getElementById('modalOverlay');
+      const modalCard = document.getElementById('modalCard');
+
+      function closeModal() {
+        modalOverlay.classList.add('hidden');
+        modalCard.innerHTML = '';
+      }
+      modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+      function openFormModal({ title, message, fields, confirmText, onConfirm, extraHtml, onExtraSetup }) {
+        modalCard.innerHTML = `
+      <h3>${escapeHtml(title)}</h3>
+      ${message ? `<p class="msg">${escapeHtml(message)}</p>` : ''}
+      ${extraHtml ? extraHtml : ''}
+      <form id="modalForm">
+        ${fields.map(f => `
+          <div class="modal-field">
+            <label for="mf-${f.name}">${escapeHtml(f.label)}</label>
+            <input id="mf-${f.name}" name="${f.name}" type="${f.type || 'text'}"
+                   value="${f.value !== undefined ? escapeHtml(f.value) : ''}"
+                   placeholder="${f.placeholder ? escapeHtml(f.placeholder) : ''}"
+                   ${f.min !== undefined ? `min="${f.min}"` : ''}
+                   ${f.max !== undefined ? `max="${f.max}"` : ''}
+                   autocomplete="off">
+          </div>
+        `).join('')}
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="modalCancel">Cancel</button>
+          <button type="submit" class="btn-primary">${escapeHtml(confirmText || 'Save')}</button>
+        </div>
+      </form>
+    `;
+        modalOverlay.classList.remove('hidden');
+        const form = document.getElementById('modalForm');
+        const firstInput = form.querySelector('input');
+        if (firstInput) {
+          setTimeout(() => {
+            firstInput.focus();
+            if (typeof firstInput.select === 'function') firstInput.select();
+          }, 30);
+        }
+        if (onExtraSetup) onExtraSetup();
+        document.getElementById('modalCancel').addEventListener('click', closeModal);
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const values = {};
+          fields.forEach(f => {
+            const el = document.getElementById('mf-' + f.name);
+            values[f.name] = f.type === 'number' ? (el.value === '' ? null : Number(el.value)) : el.value.trim();
+          });
+          closeModal();
+          onConfirm(values);
+        });
+      }
+
+      function openConfirmModal({ title, message, confirmText, danger, onConfirm }) {
+        modalCard.innerHTML = `
+      <h3>${escapeHtml(title)}</h3>
+      <p class="msg">${escapeHtml(message)}</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="modalCancel">Cancel</button>
+        <button type="button" class="${danger ? 'btn-danger' : 'btn-primary'}" id="modalConfirm">${escapeHtml(confirmText || 'Confirm')}</button>
+      </div>
+    `;
+        modalOverlay.classList.remove('hidden');
+        document.getElementById('modalCancel').addEventListener('click', closeModal);
+        document.getElementById('modalConfirm').addEventListener('click', () => {
+          closeModal();
+          onConfirm();
+        });
+      }
+
+      const sbInput = document.getElementById('sbInput');
+      const bbInput = document.getElementById('bbInput');
+      const addPlayerBtn = document.getElementById('addPlayerBtn');
+      const newHandBtn = document.getElementById('newHandBtn');
+      const nextRoundBtn = document.getElementById('nextRoundBtn');
+      const resetHandBtn = document.getElementById('resetHandBtn');
+      const saveGameBtn = document.getElementById('saveGameBtn');
+      const loadGameBtn = document.getElementById('loadGameBtn');
+      const loadGameInput = document.getElementById('loadGameInput');
+      const resetBtn = document.getElementById('resetBtn');
+      const seatsEl = document.getElementById('seats');
+      const potAmountEl = document.getElementById('potAmount');
+      const handNoEl = document.getElementById('handNo');
+      const awardBtn = document.getElementById('awardBtn');
+      const historyBody = document.getElementById('historyBody');
+
+      sbInput.value = state.blinds.small;
+      bbInput.value = state.blinds.big;
+
+      sbInput.addEventListener('change', () => {
+        state.blinds.small = Math.max(0, Number(sbInput.value) || 0);
+        saveState();
+      });
+      bbInput.addEventListener('change', () => {
+        state.blinds.big = Math.max(0, Number(bbInput.value) || 0);
+        saveState();
+      });
+
+      addPlayerBtn.addEventListener('click', () => {
+        openFormModal({
+          title: 'Add a player',
+          confirmText: 'Add to table',
+          fields: [
+            { name: 'name', label: 'Name', type: 'text', placeholder: 'e.g. Saud' },
+            { name: 'stack', label: 'Starting chips', type: 'number', value: 500 }
+          ],
+          onConfirm: (v) => {
+            if (!v.name) return;
+            state.players.push({ id: uid(), name: v.name, stack: Math.max(0, v.stack || 0) });
+            saveState();
+            render();
+          }
+        });
+      });
+
+      saveGameBtn.addEventListener('click', () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+        const a = document.createElement('a');
+        a.href = dataStr;
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, '0');
+        // Use modifier colon (\uA789) so web browsers don't sanitize standard ASCII colons (:) into dashes (-)
+        const colon = '\uA789';
+        const timestamp = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${pad(now.getFullYear())}_${pad(now.getHours())}${colon}${pad(now.getMinutes())}${colon}${pad(now.getSeconds())}`;
+        a.download = `daddys_money_save_${timestamp}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+
+      loadGameBtn.addEventListener('click', () => {
+        if (state.handInProgress) {
+          openConfirmModal({ title: 'Hand in progress', message: 'Finish the current hand before loading a new game state.', confirmText: 'Got it', onConfirm: () => { } });
+          return;
+        }
+        loadGameInput.click();
+      });
+
+      loadGameInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const loadedState = JSON.parse(evt.target.result);
+            if (loadedState && typeof loadedState === 'object' && loadedState.players) {
+              state = loadedState;
+              sbInput.value = state.blinds.small;
+              bbInput.value = state.blinds.big;
+              saveState();
+              render();
+            } else {
+              alert("Invalid save file!");
+            }
+          } catch (err) {
+            alert("Error parsing save file!");
+          }
+        };
+        reader.readAsText(file);
+        loadGameInput.value = '';
+      });
+
+      resetBtn.addEventListener('click', () => {
+        openConfirmModal({
+          title: 'Reset the game?',
+          message: 'This clears every player, the blinds, and the full hand history. It can\'t be undone.',
+          confirmText: 'Reset everything',
+          danger: true,
+          onConfirm: () => {
+            state = {
+              players: [],
+              blinds: { small: 25, big: 50 },
+              buttonIndex: 0,
+              handNumber: 0,
+              handInProgress: false,
+              pot: 0,
+              currentBets: {},
+              activePlayers: [],
+              hasActed: {},
+              turnIndex: 0,
+              highestBet: 0,
+              roundName: 'Pre-flop',
+              roundOver: false,
+              selectedWinners: [],
+              lastHandSummary: '',
+              history: []
+            };
+            sbInput.value = state.blinds.small;
+            bbInput.value = state.blinds.big;
+            saveState();
+            render();
+          }
+        });
+      });
+
+      resetHandBtn.addEventListener('click', () => {
+        if (!state.handInProgress) return;
+        openConfirmModal({
+          title: 'Reset current round?',
+          message: 'This will abort the current round, refund all bets and blinds back to players\' stacks, and return to table view. The game, players, and hand history will NOT be reset.',
+          confirmText: 'Reset round',
+          danger: true,
+          onConfirm: () => {
+            if (state.handStartingStacks) {
+              state.players.forEach(p => {
+                if (state.handStartingStacks[p.id] !== undefined) {
+                  p.stack = state.handStartingStacks[p.id];
+                }
+              });
+            } else {
+              state.players.forEach(p => {
+                if (state.currentBets && state.currentBets[p.id]) {
+                  p.stack += state.currentBets[p.id];
+                }
+              });
+            }
+
+            if (state.prevButtonIndex !== undefined) {
+              state.buttonIndex = state.prevButtonIndex;
+            }
+            state.handNumber = Math.max(0, state.handNumber - 1);
+            state.handInProgress = false;
+            state.pot = 0;
+            state.currentBets = {};
+            state.activePlayers = [];
+            state.hasActed = {};
+            state.highestBet = 0;
+            state.roundName = '';
+            state.roundOver = false;
+            state.selectedWinners = [];
+            state.handStartingStacks = null;
+            state.lastHandSummary = 'Round was reset — all bets refunded';
+
+            saveState();
+            render();
+          }
+        });
+      });
+
+      newHandBtn.addEventListener('click', () => {
+        if (state.players.length < 2) {
+          openConfirmModal({ title: 'Need more players', message: 'Add at least two players before dealing a hand.', confirmText: 'Got it', onConfirm: () => { } });
+          return;
+        }
+        if (state.handInProgress) {
+          openConfirmModal({ title: 'Hand in progress', message: 'Award the current pot to a winner before dealing the next hand.', confirmText: 'Got it', onConfirm: () => { } });
+          return;
+        }
+        state.prevButtonIndex = state.buttonIndex;
+        if (state.handNumber > 0) {
+          state.buttonIndex = (state.buttonIndex + 1) % state.players.length;
+        }
+        state.handNumber += 1;
+        state.handInProgress = true;
+        state.selectedWinners = [];
+        state.lastHandSummary = '';
+        state.pot = 0;
+        state.currentBets = {};
+        state.hasActed = {};
+        state.highestBet = 0;
+        state.roundName = 'Pre-flop';
+        state.roundOver = false;
+
+        // Snapshot stacks BEFORE blinds are deducted so the round can be cleanly reset if needed
+        state.handStartingStacks = {};
+        state.players.forEach(p => {
+          state.handStartingStacks[p.id] = p.stack;
+        });
+
+        // Filter to players with chips (or all if we want to allow rebuys later, but safer to just include everyone and auto-fold if 0? Let's include everyone).
+        state.activePlayers = state.players.map(p => p.id);
+
+        const n = state.players.length;
+        let sbIdx, bbIdx;
+        if (n === 2) {
+          sbIdx = state.buttonIndex;
+          bbIdx = (state.buttonIndex + 1) % n;
+        } else {
+          sbIdx = (state.buttonIndex + 1) % n;
+          bbIdx = (state.buttonIndex + 2) % n;
+        }
+
+        state.players.forEach(p => state.currentBets[p.id] = 0);
+
+        const sbPlayer = state.players[sbIdx];
+        const bbPlayer = state.players[bbIdx];
+        const sbPost = Math.min(state.blinds.small, sbPlayer.stack);
+        const bbPost = Math.min(state.blinds.big, bbPlayer.stack);
+        sbPlayer.stack -= sbPost;
+        bbPlayer.stack -= bbPost;
+        state.currentBets[sbPlayer.id] = sbPost;
+        state.currentBets[bbPlayer.id] = bbPost;
+        state.highestBet = Math.max(sbPost, bbPost);
+
+        // Initial hasActed
+        state.activePlayers.forEach(id => state.hasActed[id] = false);
+
+        // Turn is after BB
+        if (n === 2) {
+          state.turnIndex = state.activePlayers.indexOf(sbPlayer.id); // SB acts first preflop in heads up
+        } else {
+          state.turnIndex = (state.activePlayers.indexOf(bbPlayer.id) + 1) % state.activePlayers.length; // UTG
+        }
+
+        checkRoundOver();
+        saveState();
+        render();
+      });
+
+      function advanceToNextRound() {
+        if (!state.roundOver) return;
+
+        // Move bets to pot
+        for (let id of Object.keys(state.currentBets)) {
+          state.pot += state.currentBets[id];
+          state.currentBets[id] = 0;
+        }
+        state.highestBet = 0;
+        state.activePlayers.forEach(id => state.hasActed[id] = false);
+        state.roundOver = false;
+
+        if (state.roundName === 'Pre-flop') state.roundName = 'Flop';
+        else if (state.roundName === 'Flop') state.roundName = 'Turn';
+        else if (state.roundName === 'Turn') state.roundName = 'River';
+        else if (state.roundName === 'River') state.roundName = 'Showdown';
+
+        // Turn starts left of dealer
+        if (state.roundName !== 'Showdown') {
+          let firstToActIdx = (state.buttonIndex + 1) % state.players.length;
+          // find nearest active player
+          let count = 0;
+          while (!state.activePlayers.includes(state.players[firstToActIdx].id) && count < state.players.length) {
+            firstToActIdx = (firstToActIdx + 1) % state.players.length;
+            count++;
+          }
+          state.turnIndex = state.activePlayers.indexOf(state.players[firstToActIdx].id);
+          if (state.turnIndex === -1) state.turnIndex = 0;
+        } else {
+          state.roundOver = true; // wait for award
+        }
+
+        checkRoundOver();
+        saveState();
+        render();
+      }
+
+      nextRoundBtn.addEventListener('click', advanceToNextRound);
+
+      function awardPot(winnerIds, note = '') {
+        // Add current round bets to pot first
+        for (let id of Object.keys(state.currentBets)) {
+          state.pot += state.currentBets[id];
+          state.currentBets[id] = 0;
+        }
+
+        const pot = state.pot;
+        const winners = (winnerIds || []).map(id => state.players.find(p => p.id === id)).filter(Boolean);
+        if (winners.length === 0) return;
+
+        if (pot > 0) {
+          const share = Math.floor(pot / winners.length);
+          let remainder = pot - share * winners.length;
+          winners.forEach(w => {
+            let amt = share;
+            if (remainder > 0) { amt += 1; remainder -= 1; }
+            w.stack += amt;
+          });
+        }
+
+        const n = state.players.length;
+        const dealer = state.players[state.buttonIndex];
+        let sbP = null, bbP = null;
+        if (n === 2) {
+          sbP = state.players[state.buttonIndex];
+          bbP = state.players[(state.buttonIndex + 1) % n];
+        } else if (n > 2) {
+          sbP = state.players[(state.buttonIndex + 1) % n];
+          bbP = state.players[(state.buttonIndex + 2) % n];
+        }
+
+        const winnerNames = winners.map(w => w.name).join(', ');
+        state.history.unshift({
+          hand: state.handNumber,
+          dealer: dealer ? dealer.name : '—',
+          sb: sbP ? sbP.name : '—',
+          bb: bbP ? bbP.name : '—',
+          pot: pot,
+          winners: winnerNames + (note ? ` (${note})` : '')
+        });
+
+        state.lastHandSummary = `${winnerNames} won ${pot}${note ? ' — ' + note : ''}`;
+        state.handInProgress = false;
+        state.roundName = '';
+        state.activePlayers = [];
+        state.pot = 0;
+        state.currentBets = {};
+        state.players.forEach(p => state.currentBets[p.id] = 0);
+        state.selectedWinners = [];
+        state.roundOver = false;
+        state.handStartingStacks = null;
+
+        saveState();
+        render();
+      }
+
+      awardBtn.addEventListener('click', () => {
+        if (potTotal() <= 0 || state.selectedWinners.length === 0) return;
+        awardPot(state.selectedWinners);
+      });
+
+      function potTotal() {
+        return state.pot + Object.values(state.currentBets).reduce((a, b) => a + (Number(b) || 0), 0);
+      }
+
+      function advanceTurn() {
+        if (state.activePlayers.length === 0) return;
+        state.turnIndex = (state.turnIndex + 1) % state.activePlayers.length;
+        checkRoundOver();
+      }
+
+      function checkRoundOver() {
+        if (state.activePlayers.length <= 1) {
+          state.roundOver = true;
+          return;
+        }
+        let allActed = true;
+        let activeWithChips = 0;
+        let anyoneOwes = false;
+
+        for (let id of state.activePlayers) {
+          let p = state.players.find(x => x.id === id);
+          if (p && p.stack > 0) {
+            activeWithChips++;
+            if ((state.currentBets[id] || 0) < state.highestBet) {
+              anyoneOwes = true;
+              allActed = false;
+            }
+            if (!state.hasActed[id]) {
+              allActed = false;
+            }
+          }
+        }
+
+        // If at most 1 player has chips and no one owes money to match a bet, betting cannot continue
+        if (activeWithChips <= 1 && !anyoneOwes) {
+          state.roundOver = true;
+          return;
+        }
+
+        if (allActed) {
+          state.roundOver = true;
+        } else {
+          // ensure the current turn player actually needs to act
+          let p = state.players.find(x => x.id === state.activePlayers[state.turnIndex]);
+          if (p && p.stack === 0 && activeWithChips > 0) {
+            // skip them
+            state.turnIndex = (state.turnIndex + 1) % state.activePlayers.length;
+            checkRoundOver(); // recurse to check if round is now over, or skip next person
+          }
+        }
+      }
+
+      function seatRole(idx) {
+        const n = state.players.length;
+        if (n < 2) return { dealer: idx === state.buttonIndex, sb: false, bb: false };
+        let sbIdx, bbIdx;
+        if (n === 2) {
+          sbIdx = state.buttonIndex;
+          bbIdx = (state.buttonIndex + 1) % n;
+        } else {
+          sbIdx = (state.buttonIndex + 1) % n;
+          bbIdx = (state.buttonIndex + 2) % n;
+        }
+        return {
+          dealer: idx === state.buttonIndex,
+          sb: idx === sbIdx,
+          bb: idx === bbIdx
+        };
+      }
+
+      function render() {
+        seatsEl.innerHTML = '';
+        if (state.players.length === 0) {
+          seatsEl.innerHTML = '<div class="empty-note">No players yet — add everyone at the table to get started.</div>';
+        }
+
+        let turnPlayerId = state.handInProgress && !state.roundOver && state.activePlayers.length > 0 ? state.activePlayers[state.turnIndex] : null;
+
+        state.players.forEach((p, idx) => {
+          const role = seatRole(idx);
+          const bet = state.currentBets[p.id] || 0;
+          const isWinnerSel = state.selectedWinners.includes(p.id);
+          const isFolded = state.handInProgress && !state.activePlayers.includes(p.id);
+          const isTurn = p.id === turnPlayerId;
+
+          let seatClasses = 'seat';
+          if (isWinnerSel) seatClasses += ' winner-selected';
+          if (isTurn) seatClasses += ' active-turn';
+          if (isFolded) seatClasses += ' folded';
+
+          const badges = [];
+          if (role.dealer) badges.push('<span class="badge dealer" title="Dealer">D</span>');
+          if (role.sb) badges.push('<span class="badge sb" title="Small blind">SB</span>');
+          if (role.bb) badges.push('<span class="badge bb" title="Big blind">BB</span>');
+          if (isFolded) badges.push('<span class="badge" title="Folded" style="background:#555;color:#fff;">F</span>');
+
+          const seat = document.createElement('div');
+          seat.className = seatClasses;
+
+          // Calculate actions for this player if it's their turn
+          let actionButtons = '';
+          if (isTurn) {
+            let toCall = state.highestBet - bet;
+            let canCheck = toCall === 0;
+            let canCall = toCall > 0 && p.stack > 0;
+            let canRaise = p.stack > toCall;
+
+            let callAmtText = Math.min(toCall, p.stack);
+
+            let raiseButtons = '';
+            if (p.stack > 0 && canRaise) {
+              let minRaise = state.highestBet + state.blinds.big;
+              let r2 = Math.floor(state.highestBet + (state.blinds.big * 1.5));
+              let r3 = state.highestBet + (state.blinds.big * 2);
+
+              let canMin = p.stack > (minRaise - bet);
+              let can1_5 = p.stack > (r2 - bet);
+              let can2 = p.stack > (r3 - bet);
+
+              let quickRaises = '';
+              if (canMin || can1_5 || can2) {
+                quickRaises = `
+                  <div class="turn-sub-actions">
+                    ${canMin ? `<button class="btn-ghost" data-id="${p.id}" data-action="quick-raise" data-val="${minRaise}" title="Shortcut: I">Min (${minRaise}) <span class="hotkey">I</span></button>` : ''}
+                    ${can2 ? `<button class="btn-ghost" data-id="${p.id}" data-action="quick-raise" data-val="${r3}" title="Shortcut: O">2x (${r3}) <span class="hotkey">O</span></button>` : (can1_5 ? `<button class="btn-ghost" data-id="${p.id}" data-action="quick-raise" data-val="${r2}">1.5x (${r2})</button>` : '')}
+                    <button class="btn-primary" data-id="${p.id}" data-action="raise" title="Shortcut: R">Custom... <span class="hotkey">R</span></button>
+                  </div>
+                `;
+              } else {
+                quickRaises = `
+                  <div class="turn-sub-actions">
+                    <button class="btn-primary" data-id="${p.id}" data-action="raise" title="Shortcut: R">Custom... <span class="hotkey">R</span></button>
+                  </div>
+                `;
+              }
+
+              raiseButtons = quickRaises;
+            }
+
+            actionButtons = `
+            <div class="turn-actions">
+              <div class="turn-main-actions">
+                  <button class="btn-fold" data-id="${p.id}" data-action="fold" title="Shortcut: F">Fold <span class="hotkey">F</span></button>
+                  ${canCheck ? `<button class="btn-check" data-id="${p.id}" data-action="check" title="Shortcut: Space">Check <span class="hotkey">Space</span></button>` : ''}
+                  ${canCall ? `<button class="btn-call" data-id="${p.id}" data-action="call" title="Shortcut: Space">Call ${callAmtText} <span class="hotkey">Space</span></button>` : ''}
+                  ${p.stack > 0 ? `<button class="btn-allin" data-id="${p.id}" data-action="all-in" title="Shortcut: A">All In (${p.stack}) <span class="hotkey">A</span></button>` : ''}
+              </div>
+              ${raiseButtons}
+            </div>
+          `;
+          }
+
+          seat.innerHTML = `
+        <div class="seat-top">
+          <input class="seat-name" value="${escapeHtml(p.name)}" data-id="${p.id}" data-action="rename" ${isFolded ? 'disabled' : ''} title="Click to rename">
+          <div class="badges">${badges.join('')}</div>
+        </div>
+        <div class="stack-row">
+          <span class="stack-label">Stack</span>
+          <div class="stack-val">
+            <span class="stack-chip">🪙</span>
+            <span>${p.stack.toLocaleString()}</span>
+          </div>
+        </div>
+        ${state.handInProgress ? `
+          <div class="seat-bet-center">
+            <div class="bet-chip-pill ${bet > 0 ? 'active' : 'idle'}" title="Current bet of the round">
+              <span class="chip-dot"></span>
+              <span class="bet-label">Round Bet</span>
+              <span class="bet-val">${bet}</span>
+            </div>
+          </div>
+        ` : ''}
+        ${actionButtons}
+        <div class="seat-actions">
+          ${state.handInProgress ? `
+            <button class="icon-btn win-toggle ${isWinnerSel ? 'active' : ''}" data-id="${p.id}" data-action="toggle-winner" ${potTotal() > 0 ? '' : 'disabled'}>
+              ${isWinnerSel ? '★ Winner Selected' : '★ Winner'}
+            </button>
+            ${p.stack === 0 ? `<button class="icon-btn" data-id="${p.id}" data-action="rebuy">+ Chips</button>` : ''}
+          ` : `
+            <button class="icon-btn" data-id="${p.id}" data-action="rebuy">+ Chips</button>
+            <button class="icon-btn remove" data-id="${p.id}" data-action="remove">Remove</button>
+          `}
+        </div>
+      `;
+          seatsEl.appendChild(seat);
+        });
+
+
+        potAmountEl.textContent = potTotal();
+
+        if (state.handNumber === 0) {
+          const summaryText = state.lastHandSummary ? `<div class="hand-title" style="text-align:center;width:100%;">${escapeHtml(state.lastHandSummary)}</div>` : '<div class="hand-title" style="text-align:center;width:100%;">No hand dealt yet</div>';
+          handNoEl.innerHTML = summaryText;
+        } else if (!state.handInProgress) {
+          const summaryText = state.lastHandSummary ? ` — ${escapeHtml(state.lastHandSummary)}` : ' — Awarded';
+          handNoEl.innerHTML = `<div class="hand-title" style="text-align:center;width:100%;">Hand #${state.handNumber}${summaryText}</div>`;
+        } else {
+          const stages = ['Pre-flop', 'Flop', 'Turn', 'River', 'Showdown'];
+          const currentIndex = stages.indexOf(state.roundName);
+
+          const stagesHtml = stages.map((stage, idx) => {
+            let statusClass = '';
+            if (idx === currentIndex) statusClass = 'active';
+            else if (idx < currentIndex) statusClass = 'past';
+
+            return `
+          <div class="stage-item ${statusClass}">
+            <div class="stage-pill"></div>
+            <div class="stage-label">${stage}</div>
+          </div>
+        `;
+          }).join('');
+
+          handNoEl.innerHTML = `
+        <div class="hand-status">
+          <div class="hand-title">Hand #${state.handNumber}</div>
+          <div class="stages-track">
+            ${stagesHtml}
+          </div>
+        </div>
+      `;
+        }
+
+
+        awardBtn.disabled = !(state.handInProgress && potTotal() > 0 && state.selectedWinners.length > 0);
+
+        nextRoundBtn.style.display = (state.handInProgress && state.roundOver && state.roundName !== 'Showdown') ? 'inline-block' : 'none';
+        resetHandBtn.style.display = state.handInProgress ? 'inline-block' : 'none';
+
+        newHandBtn.disabled = false;
+        newHandBtn.style.display = state.handInProgress ? 'none' : 'inline-block';
+
+        if (state.history.length === 0) {
+          historyBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:16px;">No hands played yet</td></tr>';
+        } else {
+          historyBody.innerHTML = state.history.map(h => `
+        <tr>
+          <td>${h.hand}</td>
+          <td>${escapeHtml(h.dealer)}</td>
+          <td>${escapeHtml(h.sb)}</td>
+          <td>${escapeHtml(h.bb)}</td>
+          <td class="num">${h.pot}</td>
+          <td>${escapeHtml(h.winners)}</td>
+        </tr>
+      `).join('');
+        }
+      }
+
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      }
+
+      seatsEl.addEventListener('change', (e) => {
+        const id = e.target.getAttribute('data-id');
+        const action = e.target.getAttribute('data-action');
+        if (!id || !action) return;
+        const player = state.players.find(p => p.id === id);
+        if (!player) return;
+
+        if (action === 'rename') {
+          player.name = e.target.value.trim() || player.name;
+        }
+        saveState();
+        render();
+      });
+
+      function executeTurnAction(action, val) {
+        if (!state.handInProgress || state.activePlayers.length <= 1) return;
+        const id = state.activePlayers[state.turnIndex];
+        const player = state.players.find(p => p.id === id);
+        if (!player) return;
+
+        let bet = state.currentBets[id] || 0;
+        let toCall = state.highestBet - bet;
+
+        if (action === 'fold') {
+          state.activePlayers.splice(state.turnIndex, 1);
+          if (state.turnIndex >= state.activePlayers.length) {
+            state.turnIndex = 0;
+          }
+          if (state.activePlayers.length === 1) {
+            const winnerId = state.activePlayers[0];
+            awardPot([winnerId], 'everyone else folded');
+            return;
+          }
+          checkRoundOver();
+          saveState();
+          render();
+        } else if (action === 'check') {
+          if (toCall !== 0) return;
+          state.hasActed[id] = true;
+          advanceTurn();
+          if (state.roundOver && state.roundName !== 'Showdown') {
+            advanceToNextRound();
+            return;
+          }
+          saveState();
+          render();
+        } else if (action === 'call') {
+          if (toCall <= 0 || player.stack <= 0) return;
+          let callAmt = Math.min(toCall, player.stack);
+          player.stack -= callAmt;
+          state.currentBets[id] += callAmt;
+          state.hasActed[id] = true;
+          advanceTurn();
+          saveState();
+          render();
+        } else if (action === 'check-or-call') {
+          if (toCall === 0) {
+            state.hasActed[id] = true;
+            advanceTurn();
+            if (state.roundOver && state.roundName !== 'Showdown') {
+              advanceToNextRound();
+              return;
+            }
+            saveState();
+            render();
+          } else if (player.stack > 0) {
+            let callAmt = Math.min(toCall, player.stack);
+            player.stack -= callAmt;
+            state.currentBets[id] += callAmt;
+            state.hasActed[id] = true;
+            advanceTurn();
+            saveState();
+            render();
+          }
+        } else if (action === 'all-in') {
+          if (player.stack <= 0) return;
+          let addition = player.stack;
+          let totalBet = bet + addition;
+          player.stack = 0;
+          state.currentBets[id] = totalBet;
+          if (totalBet > state.highestBet) {
+            state.highestBet = totalBet;
+            state.activePlayers.forEach(pid => {
+              if (pid !== id) state.hasActed[pid] = false;
+            });
+          }
+          state.hasActed[id] = true;
+          advanceTurn();
+          saveState();
+          render();
+        } else if (action === 'quick-raise') {
+          let amt = Number(val);
+          let addition = amt - bet;
+          if (addition > 0 && addition <= player.stack && amt > state.highestBet) {
+            player.stack -= addition;
+            state.currentBets[id] = amt;
+            state.highestBet = amt;
+            state.activePlayers.forEach(pid => {
+              if (pid !== id) state.hasActed[pid] = false;
+            });
+            state.hasActed[id] = true;
+            advanceTurn();
+            saveState();
+            render();
+          }
+        } else if (action === 'raise') {
+          let minRaise = state.highestBet + state.blinds.big;
+          let maxBet = bet + player.stack;
+          if (player.stack <= toCall) return;
+          openFormModal({
+            title: 'Raise',
+            message: player.name + ' current stack: ' + player.stack + ' (Needs ' + toCall + ' to call)',
+            confirmText: 'Raise',
+            fields: [{
+              name: 'amount',
+              label: 'Total amount to bet this round (min ' + minRaise + ')',
+              type: 'number',
+              min: minRaise,
+              max: maxBet,
+              placeholder: minRaise,
+              value: ''
+            }],
+            onConfirm: (v) => {
+              let amt = v.amount === null ? minRaise : Math.floor(v.amount);
+              let isAllIn = (amt === maxBet);
+
+              if (amt < minRaise && !isAllIn) {
+                alert("Raise must be at least " + minRaise + "!");
+                return;
+              }
+
+              let addition = amt - bet;
+              if (addition > 0 && addition <= player.stack && amt > state.highestBet) {
+                player.stack -= addition;
+                state.currentBets[id] = amt;
+                state.highestBet = amt;
+                state.activePlayers.forEach(pid => {
+                  if (pid !== id) state.hasActed[pid] = false;
+                });
+                state.hasActed[id] = true;
+                advanceTurn();
+                saveState();
+                render();
+              } else {
+                alert("Invalid raise amount!");
+              }
+            }
+          });
+        }
+      }
+
+      seatsEl.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        const action = btn.getAttribute('data-action');
+        const player = state.players.find(p => p.id === id);
+        if (!player) return;
+
+        if (['fold', 'check', 'call', 'raise', 'quick-raise', 'all-in'].includes(action) && state.activePlayers[state.turnIndex] === id) {
+          executeTurnAction(action, btn.getAttribute('data-val'));
+          return;
+        }
+
+        if (action === 'toggle-winner') {
+          const i = state.selectedWinners.indexOf(id);
+          if (i === -1) state.selectedWinners.push(id);
+          else state.selectedWinners.splice(i, 1);
+        }
+        if (action === 'rebuy') {
+          openFormModal({
+            title: 'Add chips',
+            message: player.name + '\'s current stack is ' + player.stack + '.',
+            confirmText: 'Add chips',
+            fields: [{ name: 'amount', label: 'Amount to add', type: 'number', placeholder: 100, value: '' }],
+            onConfirm: (v) => {
+              const amt = Math.floor(v.amount || 100);
+              if (amt > 0) {
+                player.stack += amt;
+                if (state.handStartingStacks && state.handStartingStacks[player.id] !== undefined) {
+                  state.handStartingStacks[player.id] += amt;
+                }
+                saveState();
+                render();
+              }
+            }
+          });
+          return;
+        }
+        if (action === 'remove') {
+          if (state.handInProgress) {
+            openConfirmModal({ title: 'Hand in progress', message: 'Finish the current hand before removing a player.', confirmText: 'Got it', onConfirm: () => { } });
+            return;
+          }
+          openConfirmModal({
+            title: 'Remove player?',
+            message: 'Remove ' + player.name + ' from the table? Their chip count will be lost.',
+            confirmText: 'Remove',
+            danger: true,
+            onConfirm: () => {
+              const idx = state.players.findIndex(p => p.id === id);
+              state.players.splice(idx, 1);
+              if (state.players.length) {
+                state.buttonIndex = state.buttonIndex % state.players.length;
+              } else {
+                state.buttonIndex = 0;
+              }
+              saveState();
+              render();
+            }
+          });
+          return;
+        }
+        saveState();
+        render();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        // Do not intercept if focused on an input, textarea, or select element
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+        // Do not intercept if any modal is currently visible
+        const modalOverlay = document.getElementById('modalOverlay');
+        if (modalOverlay && !modalOverlay.classList.contains('hidden')) return;
+
+        const key = e.key.toLowerCase();
+
+        // space -> checks/calls
+        if (e.key === ' ' || e.code === 'Space') {
+          e.preventDefault();
+          executeTurnAction('check-or-call');
+          return;
+        }
+
+        // f -> folds
+        if (key === 'f') {
+          e.preventDefault();
+          executeTurnAction('fold');
+          return;
+        }
+
+        // r -> custom raise
+        if (key === 'r') {
+          e.preventDefault();
+          executeTurnAction('raise');
+          return;
+        }
+
+        // i -> minimum raise
+        if (key === 'i') {
+          e.preventDefault();
+          const minRaise = state.highestBet + state.blinds.big;
+          executeTurnAction('quick-raise', minRaise);
+          return;
+        }
+
+        // o -> 2x raise
+        if (key === 'o') {
+          e.preventDefault();
+          const r3 = state.highestBet + (state.blinds.big * 2);
+          executeTurnAction('quick-raise', r3);
+          return;
+        }
+
+        // a -> all in
+        if (key === 'a') {
+          e.preventDefault();
+          executeTurnAction('all-in');
+          return;
+        }
+
+        // s -> saves (only when round is over)
+        if (key === 's') {
+          if (!state.handInProgress || state.roundOver) {
+            e.preventDefault();
+            saveGameBtn.click();
+          }
+          return;
+        }
+      });
+
+      render();
+    })();
+  </script>
+</body>
+
+</html>
